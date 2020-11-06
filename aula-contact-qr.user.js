@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Aula Contact QR
 // @namespace    https://github.com/hcsaustrup/tampermonkey
-// @version      0.3
+// @version      0.4
 // @description  Add missing features to the Aula system
 // @author       You
 // @match        https://www.aula.dk/portal/*
@@ -106,7 +106,7 @@
         if (d.mobilePhone) {
             var vcard = o.encodeVcard(d);
             console.log("VCARD:", vcard);
-            jQR.qrcode({ "text": vcard, width: 500, height: 500 });
+            jQR.qrcode({ "text": vcard, width: 600, height: 600 });
         }
         jQR.show();
     };
