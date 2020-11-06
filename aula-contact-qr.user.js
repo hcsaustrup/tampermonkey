@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Aula Contact QR
 // @namespace    https://github.com/hcsaustrup/tampermonkey
-// @version      0.1
+// @version      0.2
 // @description  Add missing features to the Aula system
 // @author       You
 // @match        https://www.aula.dk/portal/*
