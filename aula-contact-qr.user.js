@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Aula Contact QR
 // @namespace    https://github.com/hcsaustrup/tampermonkey
-// @version      0.2
+// @version      0.3
 // @description  Add missing features to the Aula system
 // @author       You
 // @match        https://www.aula.dk/portal/*
@@ -19,7 +19,7 @@
 
     o.id = 0;
 
-    o.encodeVcard = function(d) {
+    o.encodeVcard = function (d) {
         var v = "BEGIN:VCARD\n" +
             "VERSION:4.0\n";
 
@@ -29,8 +29,8 @@
             v += "FN:" + d.name + "\n";
         }
 
-//            v += "ORG:Foo Org\n";
-            v += "TITLE:" + d.title + "\n";
+        // v += "ORG:Foo Org\n";
+        v += "TITLE:" + d.title + "\n";
 
         if (d.mobilePhone) {
             v += "TEL;TYPE=cell;VALUE=uri:tel:" + d.mobilePhone + "\n";
@@ -42,27 +42,26 @@
             v += "TEL;TYPE=work,voice;VALUE=uri:tel:" + d.workPhone + "\n";
         }
         if (d.address) {
-            v += "ADR;TYPE=HOME;LABEL=\"\":;;"+d.address+";"+d.city+";;" + d.zipcode + ";\n";
+            v += "ADR;TYPE=HOME;LABEL=\"\":;;" + d.address + ";" + d.city + ";;" + d.zipcode + ";\n";
         }
         if (d.email) {
-            v += "EMAIL:"+d.email+"\n";
+            v += "EMAIL:" + d.email + "\n";
         }
 
         v += "END:VCARD";
-return v;
+        return v;
     };
 
-    o.qr = function(jInfo, jQR) {
+    o.qr = function (jInfo, jQR) {
         var d = {};
-        jInfo.children(".mb-1").each(function(i, element) {
+        jInfo.children(".mb-1").each(function (i, element) {
             d.role = element.innerText.trim();
         });
-        jInfo.find(".contact-text span").each(function(i, element) {
-            console.log("Contact text span", element);
-            if (i==0) {
+        jInfo.find(".contact-text span").each(function (i, element) {
+            if (i == 0) {
                 d.name = element.innerText.replace(/\(.*\)/, "").trim();
             }
-            if (i==1) {
+            if (i == 1) {
                 var m = element.innerText.match(/^(.*?), (\d{4}) (\w+.*)$/);
                 if (m.length == 4) {
                     d.address = m[1].trim();
@@ -71,10 +70,9 @@ return v;
                 }
             }
         });
-        jInfo.find(".contact-item").each(function(i, element) {
+        jInfo.find(".contact-item").each(function (i, element) {
             var spans = $(element).children("span");
             if (spans.length != 2) return;
-            console.log(spans[0]);
             var key = spans[0].innerText.toLowerCase().replace(/\W/g, ' ').trim().replace(' ', '-');
             var value = spans[1].innerText.trim().toLowerCase();
 
@@ -90,7 +88,7 @@ return v;
                 console.log("Aula Tweaks: Unknown field: " + key);
             }
         });
-        console.log(jInfo);
+
         var jName = jInfo.closest(".contact").find(".contact-name");
         if (jName.length == 1) {
             var childNames = jName[0].innerText.replace(/\(.*\)/, '').trim().split(" ");
@@ -103,18 +101,18 @@ return v;
             d.title = d.childShortName + (d.childShortName.match(/s$/) ? "es" : "s") + " " + d.role.toLowerCase();
         }
 
-        console.log("d", d);
+        console.log("Data:", d);
 
         if (d.mobilePhone) {
             var vcard = o.encodeVcard(d);
-            console.log(vcard);
-            jQR.qrcode({"text": vcard, width: 500, height: 500});
+            console.log("VCARD:", vcard);
+            jQR.qrcode({ "text": vcard, width: 500, height: 500 });
         }
         jQR.show();
     };
 
-    o.timeout = function() {
-        $("div.relation").not(".qred").each(function(i, element) {
+    o.timeout = function () {
+        $("div.relation").not(".qred").each(function (i, element) {
             console.log(element);
             var jElement = $(element);
             jElement.addClass('qred');
@@ -123,11 +121,11 @@ return v;
             var jButton = $("<button>");
             jButton.text("QR");
 
-            jButton.on('click', function() {
+            jButton.on('click', function () {
                 o.qr(jElement, jQR);
                 jButton.hide();
             });
-            jQR.on('click', function() {
+            jQR.on('click', function () {
                 jQR.hide();
                 jButton.show();
             });
@@ -138,11 +136,11 @@ return v;
     };
 
 
-    o.queueTimeout = function() {
-        setTimeout(function() { o.timeout() }, 2000);
+    o.queueTimeout = function () {
+        setTimeout(function () { o.timeout() }, 2000);
     };
 
-        o.queueTimeout();
+    o.queueTimeout();
 
 
 })();
